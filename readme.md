@@ -1,0 +1,2 @@
+# Line Counter
+Very simple line counter that gives you details about a file. Lines, columns, lowercase, uppercase, digits, symbols, whitespace and other. If you have big file or low-end pc expect low performance.
