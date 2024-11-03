@@ -1,35 +1,34 @@
 import string
 import argparse
 
-#TODO 
-# Process replace with regex, maybe faster
-
-class Ansi:
-    def __init__(self) -> None:
-        self.end = "\33[0m"
-        self.bold = "\33[1m"
-        self.underline = "\33[4m"
-        self.gray = "\33[90m"
-
 def main():
-    # Setup argparse and variable
+    # Setup argparse and variables
     args = parse_arguments()
     is_verbose = args.verbose
     file_path = args.file
-    
+    # Get file from argument
     if raw_data:= get_file(file_path):
+        # Process file data
         if line_dict:= process_data(raw_data, is_verbose):
+            # Print data to cli
             print_data(line_dict, is_verbose)
 
 def print_data(line_dict, is_verbose):
-    ansi = Ansi()
-    separator = " | "
+    # Setup Ansii class
+    ansi = Ansii()
+    # Symbols used
+    separator = " | " # Space required
     line = "-"
+    # Calculate length for each row, based on max length of string
     length_row_one = max(len(key) for key in line_dict)
     length_row_two = max(len(f"{value:,}") for value in line_dict.values())
+    # max_length of all parts, row_one + row_two and separator
     max_length = length_row_one + len(separator) + length_row_two
+    
+    # Finally print data from dict
     print("\nLine Counter")
     print(line*(max_length), sep="")
+    # i = counter, for verbose mode
     for key, i in zip(line_dict, range(len(line_dict))):
         if i == 2 and not is_verbose:
             break
@@ -42,23 +41,22 @@ def print_data(line_dict, is_verbose):
             print(ansi.gray + key_str.capitalize() + separator + list_value + ansi.end)
     print()
 
-
 def process_data(data, verbose):
     line_dict = {
         "lines": 0,
-        "columns": 0,
+        "characters": 0,
         "lower-case": 0,
         "upper-case": 0,
         "digits": 0,
         "symbols": 0,
         "whitespace": 0,
-        "others": 0,
+        "others": 0
     }
-
+    
     for line in data:
         line_dict["lines"] += 1
         for char in line:
-            line_dict["columns"] += 1
+            line_dict["characters"] += 1
             if char in string.ascii_lowercase:
                 line_dict["lower-case"] += 1
             elif char in string.ascii_uppercase:
@@ -71,7 +69,6 @@ def process_data(data, verbose):
                 line_dict["whitespace"] += 1
             else:
                 line_dict["others"] += 1
-
     return line_dict
 
 def get_file(file_path):
@@ -102,6 +99,12 @@ def parse_arguments():
 
     return parser.parse_args()
 
+class Ansii:
+    def __init__(self) -> None:
+        self.end = "\33[0m"
+        self.bold = "\33[1m"
+        self.underline = "\33[4m"
+        self.gray = "\33[90m"
 
 if __name__ == "__main__":
     main()
